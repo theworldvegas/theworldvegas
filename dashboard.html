@@ -35,95 +35,85 @@ body{
 .menu{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:16px;
-    padding:16px;
+    gap:18px;
+    padding:20px;
 }
 
 .menu a{
     position:relative;
-    height:90px;
+    height:110px;
+    text-decoration:none;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    text-decoration:none;
+
     color:#fff;
-    font-size:14px;
-    font-weight:bold;
+    font-size:18px;
+    font-weight:700;
 
-    /* Glass */
-    background:rgba(255,255,255,0.12);
-    backdrop-filter:blur(15px);
-    -webkit-backdrop-filter:blur(15px);
+    background:linear-gradient(145deg,#3b3348,#2a2438);
 
-    /* Premium Border */
-    border:1.5px solid rgba(255,255,255,.25);
-    border-radius:18px;
+    border-radius:24px;
+    border:2px solid rgba(255,255,255,.18);
 
-    /* 3D Shadow */
     box-shadow:
-        inset 1px 1px 2px rgba(255,255,255,.35),
-        inset -1px -1px 2px rgba(0,0,0,.2),
-        0 8px 18px rgba(0,0,0,.45);
+      inset 2px 2px 4px rgba(255,255,255,.18),
+      inset -2px -2px 4px rgba(0,0,0,.35),
+      0 10px 25px rgba(0,0,0,.55);
 
-    transition:.3s ease;
+    transition:.25s ease;
     overflow:hidden;
 }
 
-/* Top Light */
+/* Glow Border */
+.menu a::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:24px;
+    padding:2px;
+    background:linear-gradient(135deg,#b76cff,#4a7dff,#8f5fff);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+            mask-composite:exclude;
+    opacity:.75;
+}
+
+/* Shine */
 .menu a::before{
     content:"";
     position:absolute;
-    top:0;
-    left:-70%;
-    width:50%;
-    height:100%;
-    background:linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,.6),
-        transparent
-    );
-    transform:skewX(-25deg);
+    top:-120%;
+    left:-60%;
+    width:60%;
+    height:300%;
+    background:rgba(255,255,255,.18);
+    transform:rotate(30deg);
+    transition:.7s;
 }
 
-/* Shine Animation */
 .menu a:hover::before{
-    animation:shine .8s linear;
+    left:140%;
 }
 
-@keyframes shine{
-    100%{
-        left:140%;
-    }
-}
-
-/* Icon */
-.menu a{
-    font-size:30px;
-}
-
-.menu a span{
-    font-size:13px;
-    margin-top:8px;
-    color:#fff;
-}
-
-/* Press Effect */
-.menu a:active{
-    transform:translateY(4px) scale(.96);
-
-    box-shadow:
-        inset 4px 4px 8px rgba(0,0,0,.35),
-        inset -2px -2px 6px rgba(255,255,255,.2);
-}
-
-/* Floating Effect */
 .menu a:hover{
     transform:translateY(-5px);
     box-shadow:
-        0 0 12px rgba(0,255,255,.35),
-        0 10px 25px rgba(0,0,0,.5);
+      0 0 18px rgba(124,92,255,.55),
+      0 14px 35px rgba(0,0,0,.6);
+}
+
+.menu a:active{
+    transform:scale(.96);
+}
+
+.menu a span{
+    margin-top:10px;
+    font-size:14px;
+    color:#fff;
 }
 .menu span{margin-top:6px}
 
