@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The World Vegas | Login</title>
+<!-- আইকনের জন্য FontAwesome যুক্ত করা হয়েছে -->
+<link rel="stylesheet" href="https://cloudflare.com">
+<style>
+@import url('https://googleapis.com');
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: 'Poppins', Arial, sans-serif;
+  /* ছবির মতো ডার্ক ব্লু ব্যাকগ্রাউন্ড */
+  background: radial-gradient(circle at center, #1e1b4b 0%, #0f0c1b 100%);
+  color:#fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ব্যাকগ্রাউন্ডের নিয়ন গ্লো ইফেক্ট */
+body::before, body::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  filter: blur(150px);
+  border-radius: 50%;
+  z-index: 1;
+}
+body::before { top: 10%; left: 15%; background: #4facfe; }
+body::after { bottom: 10%; right: 15%; background: #00f2fe; }
+
+.container{
+  width: 100%;
+  max-width:440px;
+  padding:20px;
+  position: relative;
+  z-index: 10;
+}
+.header{
+  text-align:center;
+  padding-bottom: 25px;
+}
+.header h1{
+  margin:0;
+  font-size:32px;
+  font-weight: 600;
+  color:#00f2fe;
+  text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+}
+.header p {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* গ্লাস কার্ড স্টাইল */
+.card{
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 242, 254, 0.35);
+  border-radius: 24px;
+  padding: 35px 30px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 40px rgba(0, 242, 254, 0.15), 
+              inset 0 0 15px rgba(255, 255, 255, 0.02);
+}
+.tabs{
+  display:flex;
+  margin-bottom:30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 30px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding:12px;
+  cursor:pointer;
+  border-radius: 25px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.tab.active{
+  background: rgba(0, 242, 254, 0.2);
+  color:#00f2fe;
+  box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.2);
+}
+
+/* ইনপুট গ্রুপ আইকনসহ */
+.input-wrapper {
+  position: relative;
+  margin-top: 20px;
+}
+.input-wrapper i {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+}
+input{
+  width:100%;
+  padding: 15px 50px 15px 20px;
+  border-radius: 30px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  outline:none;
+  background: rgba(255, 255, 255, 0.05);
+  color:#fff;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+input:focus{
+  border-color: #00f2fe;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
+}
+
+/* বাটন গ্লাস স্টাইল */
+button{
+  width:100%;
+  padding:15px;
+  margin-top:30px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius:30px;
+  background: transparent;
+  color:#fff;
+  font-size: 16px;
+  font-weight:600;
+  letter-spacing: 1px;
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+button:hover{
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #00f2fe;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+}
+button:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+  box-shadow: none;
+}
+.link{
+  margin-top:20px;
+  text-align:center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor:pointer;
+  font-size:14px;
+  transition: color 0.3s;
+}
+.link:hover {
+  color: #00f2fe;
+  text-decoration: underline;
+}
+.hide{display:none}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>The World Vegas</h1>
+    <p>Largest Platform In The World</p>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" id="loginTab" onclick="showLogin()">Log in</div>
+      <div class="tab" id="signupTab" onclick="showSignup()">Sign up</div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+      <div class="input-wrapper">
+        <input id="loginPhone" placeholder="Phone number">
+        <i class="fa-regular fa-user"></i>
+      </div>
+      <div class="input-wrapper">
+        <input id="loginPass" type="password" placeholder="Password">
+        <i class="fa-regular fa-eye-slash"></i>
+      </div>
+      <button id="loginBtn" onclick="login()">LOG IN</button>
+      <div class="link" onclick="forgotPassword()">Forgot password?</div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signupBox" class="hide">
+      <div class="input-wrapper">
+        <input id="fullName" placeholder="Full name">
+        <i class="fa-regular fa-id-card"></i>
+      </div>
+      <div class="input-wrapper">
+        <input id="signupPhone" placeholder="Phone number">
+        <i class="fa-regular fa-user"></i>
+      </div>
+      <div class="input-wrapper">
+        <input id="signupPass" type="password" placeholder="Password">
+        <i class="fa-regular fa-eye-slash"></i>
+      </div>
+      <div class="input-wrapper">
+        <input id="signupPass2" type="password" placeholder="Confirm password">
+        <i class="fa-regular fa-eye-slash"></i>
+      </div>
+      <div class="input-wrapper">
+        <input id="referCode" placeholder="Refer code (Optional)">
+        <i class="fa-solid fa-gift"></i>
+      </div>
+      <button id="signupBtn" onclick="signup()">CONTINUE</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* PHONE NORMALIZER */
+function normalizePhone(phone){
+  phone = phone.trim();
+  if(phone.startsWith("+88")) phone = phone.slice(3);
+  if(phone.startsWith("88")) phone = phone.slice(2);
+  return phone;
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDzC0YtyxLS0y2gqCHMElbXQgYQBkB_2WQ",
+  authDomain: "theworldvegas-53640.firebaseapp.com",
+  projectId: "theworldvegas-53640"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* UI */
+window.showSignup = ()=>{
+  loginBox.classList.add("hide");
+  signupBox.classList.remove("hide");
+  loginTab.classList.remove("active");
+  signupTab.classList.add("active");
+};
+
+window.showLogin = ()=>{
+  signupBox.classList.add("hide");
+  loginBox.classList.remove("hide");
+  signupTab.classList.remove("active");
+  loginTab.classList.add("active");
+};
+
+/* SIGNUP */
+window.signup = async ()=>{
+  const btn = signupBtn;
+  if(btn.disabled) return;
+
+  if(!fullName.value || !signupPhone.value || !signupPass.value){
+    alert("All fields are required");
+    return;
+  }
+  if(signupPass.value !== signupPass2.value){
+    alert("Password mismatch");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Processing...";
+
+  try{
+    const phone = normalizePhone(signupPhone.value);
+    const email = phone + "@binoyog.com";
+
+    const cred = await createUserWithEmailAndPassword(auth,email,signupPass.value);
+
+    await setDoc(doc(db,"users",cred.user.uid),{
+      uid: cred.user.uid,
+      name: fullName.value,
+      phone: phone,
+      referCode: referCode.value || null,
+      balance: 0,
+      role: "user",
+      createdAt: serverTimestamp()
+    });
+
+    alert("Signup successful. Please login.");
+    showLogin();
+  }catch(e){
+    alert(e.message);
+  }
+
+  btn.disabled = false;
+  btn.innerText = "CONTINUE";
+};
+
+/* LOGIN */
+window.login = async ()=>{
+  const btn = loginBtn;
+  if(btn.disabled) return;
+
+  btn.disabled = true;
+  btn.innerText = "Processing...";
+
+  try{
+    const phone = normalizePhone(loginPhone.value);
+    await signInWithEmailAndPassword(
+      auth,
+      phone + "@binoyog.com",
+      loginPass.value
+    );
+    location.href="dashboard.html";
+  }catch(e){
+    alert("Wrong phone or password");
+    btn.disabled = false;
+    btn.innerText = "LOG IN";
+  }
+};
+
+/* FORGOT PASSWORD */
+window.forgotPassword = async ()=>{
+  const phone = prompt("Enter your phone number");
+  if(!phone) return;
+
+  const newPass = Math.random().toString(36).slice(-8);
+
+  await addDoc(collection(db,"passwordResets"),{
+    phone: normalizePhone(phone),
+    newPassword: newPass,
+    status: "approved",
+    createdAt: serverTimestamp()
+  });
+
+  alert("New password: " + newPass);
+};
+</script>
+</body>
+</html>
