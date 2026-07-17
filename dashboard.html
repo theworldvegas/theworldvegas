@@ -144,19 +144,38 @@ body{
   
 /* Logout at bottom */
 .fixed-logout{
-  position:relative;
-  bottom:0;
-  display:block;
-  width:auto;
-  min-width:4px;
-  padding:6px 8px;
-  font-size:20px;
-  text-align:center;
-  background:#8B0000;
-  color:#151B54;
-  cursor:pointer;
-  border-radius:8px;
-  margin:6px auto;
+    width:90px;
+    height:50px;
+
+    margin:25px auto;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:28px;
+
+    background:linear-gradient(180deg,#c40f0f,#8f0000);
+
+    color:#fff;
+
+    border-radius:15px;
+    border:2px solid rgba(255,255,255,.2);
+
+    box-shadow:
+        0 0 15px rgba(255,0,0,.35),
+        inset 2px 2px 4px rgba(255,255,255,.2);
+
+    cursor:pointer;
+    transition:.25s;
+}
+
+.fixed-logout:hover{
+    transform:translateY(-3px);
+}
+
+.fixed-logout:active{
+    transform:scale(.95);
 }
 </style>
 </head>
