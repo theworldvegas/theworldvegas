@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery | The World Vegas</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#0D031B;
+    font-family:Arial,sans-serif;
+    color:#fff;
+}
+
+/* Header */
+.header{
+    position:sticky;
+    top:0;
+    background:#15062d;
+    padding:15px;
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+    box-shadow:0 2px 15px rgba(0,0,0,.5);
+}
+
+/* Gallery */
+.gallery{
+    padding:15px;
+}
+
+.photo{
+    margin-bottom:18px;
+}
+
+.photo img{
+    width:100%;
+    display:block;
+    border-radius:18px;
+    border:2px solid rgba(255,255,255,.15);
+    box-shadow:
+        0 0 15px rgba(90,120,255,.25),
+        0 8px 20px rgba(0,0,0,.45);
+    transition:.3s;
+}
+
+.photo img:hover{
+    transform:scale(1.02);
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+📷 Gallery
+</div>
+
+<div class="gallery">
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic1.jpg" alt="Pic 1">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic2.jpg" alt="Pic 2">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic3.jpg" alt="Pic 3">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic4.jpg" alt="Pic 4">
+</div>
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic5.jpg" alt="Pic 5">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic6.jpg" alt="Pic 6">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic7.jpg" alt="Pic 7">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic8.jpg" alt="Pic 8">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic9.jpg" alt="Pic 9">
+</div>
+
+<div class="photo">
+    <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic10.jpg" alt="Pic 10">
+
+</div>
+
+</body>
+</html>
