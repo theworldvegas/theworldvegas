@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Balance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Hind Siliguri',sans-serif;
+    background:url("https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/background.jpg")
+    center center/cover no-repeat fixed;
+    min-height:100vh;
+    padding:20px;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.20);
+    z-index:-1;
+}
+
+/* Glass Balance Box */
+
+.box{
+    max-width:420px;
+    margin:20px auto;
+    padding:20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    border-radius:22px;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.20);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.35),
+        inset 0 1px rgba(255,255,255,.25);
+}
+
+.left{
+    flex:1;
+}
+
+.small{
+    color:#ddd;
+    font-size:15px;
+    margin-bottom:8px;
+}
+
+.balance{
+    font-size:32px;
+    font-weight:bold;
+    color:#fff;
+}
+
+.right img{
+    width:90px;
+    height:90px;
+    object-fit:contain;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+    <div class="left">
+
+        <div class="small">
+            Current Balance
+        </div>
+
+        <div class="balance">
+            ৳ <span id="balance">0</span>
+        </div>
+
+    </div>
+
+    <div class="right">
+
+        <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic1.gif" alt="Balance GIF">
+
+    </div>
+
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+    getFirestore,
+    doc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* Firebase Config */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDzC0YtyxLS0y2gqCHMElbXQgYQBkB_2WQ",
+    authDomain: "theworldvegas-53640.firebaseapp.com",
+    projectId: "theworldvegas-53640"
+};
+
+/* Initialize Firebase */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* Load Balance */
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        location.href = "index.html";
+        return;
+    }
+
+    onSnapshot(doc(db, "users", user.uid), (snap) => {
+
+        if (snap.exists()) {
+
+            document.getElementById("balance").innerText =
+                snap.data().balance || 0;
+
+        }
+
+    });
+
+});
+</script>
+
+</body>
+</html>
