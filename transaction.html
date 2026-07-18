@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Summary</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Hind Siliguri',sans-serif;
+    background:url("https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/background.jpg") center center/cover no-repeat fixed;
+    min-height:100vh;
+    color:#fff;
+}
+
+/* Sticky Summary */
+.summary{
+    position:sticky;
+    top:10px;
+    z-index:999;
+    padding:15px;
+}
+
+.summary-box{
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
+
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.35);
+
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.item{
+    flex:1;
+    text-align:center;
+}
+
+.item h3{
+    font-size:15px;
+    margin-bottom:10px;
+    font-weight:600;
+    color:#ffffff;
+}
+
+.amount{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.deposit{
+    color:#00ff88;
+}
+
+.withdraw{
+    color:#ff5e5e;
+}
+
+/* Scroll Area */
+.content{
+    padding:15px;
+    min-height:180vh;
+}
+  </style>
+</head>
+
+<body>
+
+<div class="summary">
+
+    <div class="summary-box">
+
+        <div class="item">
+            <h3>Deposit Summary</h3>
+            <div class="amount deposit">
+                ৳ <span id="depositTotal">0</span>
+            </div>
+        </div>
+
+        <div class="item">
+            <h3>Withdraw Summary</h3>
+            <div class="amount withdraw">
+                ৳ <span id="withdrawTotal">0</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="content">
+    <!-- এখানে ভবিষ্যতে চাইলে অন্য কনটেন্ট যোগ করতে পারবেন -->
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+    authDomain: "biniyog-95d00.firebaseapp.com",
+    projectId: "biniyog-95d00"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth,(user)=>{
+
+    if(!user){
+        location.href="index.html";
+        return;
+    }
+
+    loadSummary(user.uid);
+});
+
+function loadSummary(uid){
+
+    onSnapshot(
+        query(collection(db,"deposits"),where("uid","==",uid)),
+        (snap)=>{
+
+            let total=0;
+
+            snap.forEach(doc=>{
+                const data=doc.data();
+                total += Number(data.amount||0);
+            });
+
+            document.getElementById("depositTotal").innerText=total;
+
+        }
+    );
+
+    onSnapshot(
+        query(collection(db,"withdraws"),where("uid","==",uid)),
+        (snap)=>{
+
+            let total=0;
+
+            snap.forEach(doc=>{
+                const data=doc.data();
+                total += Number(data.amount||0);
+            });
+
+            document.getElementById("withdrawTotal").innerText=total;
+
+        }
+    );
+
+}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDzC0YtyxLS0y2gqCHMElbXQgYQBkB_2WQ",
+  authDomain: "theworldvegas-53640.firebaseapp.com",
+  projectId: "theworldvegas-53640"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const depositEl = document.getElementById("pendingDeposit");
+const withdrawEl = document.getElementById("pendingWithdraw");
+
+onAuthStateChanged(auth,(user)=>{
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+
+  loadSummary(user.uid);
+});
+
+function loadSummary(uid){
+
+  // Deposit Summary
+  onSnapshot(
+    query(collection(db,"deposits"),where("uid","==",uid)),
+    (snapshot)=>{
+
+      let total=0;
+
+      snapshot.forEach(doc=>{
+        const data=doc.data();
+
+        if(data.status==="pending"){
+          total += Number(data.amount||0);
+        }
+      });
+
+      depositEl.innerText=total;
+    }
+  );
+
+  // Withdraw Summary
+  onSnapshot(
+    query(collection(db,"withdraws"),where("uid","==",uid)),
+    (snapshot)=>{
+
+      let total=0;
+
+      snapshot.forEach(doc=>{
+        const data=doc.data();
+
+        if(data.status==="pending"){
+          total += Number(data.amount||0);
+        }
+      });
+
+      withdrawEl.innerText=total;
+    }
+  );
+}
+</script>
+
+</body>
+</html>  
