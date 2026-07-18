@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Biniyog | Transaction History</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Hind Siliguri',sans-serif;
+    background:url("background.png") center center/cover no-repeat fixed;
+    min-height:100vh;
+    color:#fff;
+}
+
+/* Dark Overlay */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    z-index:-1;
+}
+
+/* Main Container */
+
+.container{
+    width:100%;
+    max-width:430px;
+    margin:auto;
+    padding:18px;
+}
+
+/* Glass Summary Box */
+
+.summary-box{
+
+    background:rgba(255,255,255,.12);
+
+    border:1px solid rgba(255,255,255,.18);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    border-radius:22px;
+
+    padding:22px;
+
+    box-shadow:
+    0 10px 35px rgba(0,0,0,.40),
+    inset 0 1px rgba(255,255,255,.25);
+
+    margin-bottom:18px;
+}
+
+.summary-title{
+
+    text-align:center;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    margin-bottom:18px;
+
+    color:#ffffff;
+}
+
+.summary-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin:12px 0;
+
+    padding:12px 15px;
+
+    border-radius:15px;
+
+    background:rgba(255,255,255,.08);
+}
+
+.summary-item span{
+
+    font-size:16px;
+}
+
+.deposit-text{
+
+    color:#00ff99;
+
+    font-weight:bold;
+}
+
+.withdraw-text{
+
+    color:#ff8080;
+
+    font-weight:bold;
+}
+
+/* Filter Buttons */
+
+.filters{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:18px;
+}
+
+.filters button{
+
+    flex:1;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(12px);
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.filters button:hover{
+
+    transform:translateY(-2px);
+}
+
+.filters button.active{
+
+    background:linear-gradient(135deg,#00c853,#00e676);
+}
+
+/* History */
+
+.list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+}
+
+.card{
+
+    background:rgba(255,255,255,.10);
+
+    backdrop-filter:blur(15px);
+
+    border:1px solid rgba(255,255,255,.18);
+
+    border-radius:18px;
+
+    padding:16px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.35);
+}
+
+.deposit{
+
+    border-left:5px solid #00ff99;
+}
+
+.withdraw{
+
+    border-left:5px solid #ff6666;
+}
+
+.amount{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#fff;
+
+    margin-bottom:8px;
+}
+
+.small{
+
+    color:#ddd;
+
+    font-size:13px;
+
+    margin-top:3px;
+}
+
+.approved{
+
+    color:#00ff99;
+
+    font-weight:bold;
+}
+
+.pendingTxt{
+
+    color:#ffd54f;
+
+    font-weight:bold;
+}
+
+.rejected{
+
+    color:#ff6b6b;
+
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="summary-box">
+
+<div class="summary-title">
+Transaction Summary
+</div>
+
+<div class="summary-item">
+
+<span class="deposit-text">
+Pending Deposit
+</span>
+
+<span id="pendingDeposit">
+0
+</span>
+
+</div>
+
+<div class="summary-item">
+
+<span class="withdraw-text">
+Pending Withdraw
+</span>
+
+<span id="pendingWithdraw">
+0
+</span>
+
+</div>
+
+</div>
+
+<div class="filters">
+
+<button class="active"
+onclick="setFilter('all',this)">
+All
+</button>
+
+<button onclick="setFilter('deposit',this)">
+Deposit
+</button>
+
+<button onclick="setFilter('withdraw',this)">
+Withdraw
+</button>
+
+</div>
+
+<div class="list" id="list">
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDzC0YtyxLS0y2gqCHMElbXQgYQBkB_2WQ",
+  authDomain: "theworldvegas-53640.firebaseapp.com",
+  projectId: "theworldvegas-53640"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let uid = "";
+let items = [];
+let filter = "all";
+
+onAuthStateChanged(auth, user => {
+
+  if(!user){
+    location.href = "index.html";
+    return;
+  }
+
+  uid = user.uid;
+
+  listen("deposits","deposit");
+  listen("withdraws","withdraw");
+
+});
+
+function listen(col,type){
+
+  onSnapshot(
+
+    query(collection(db,col),where("uid","==",uid)),
+
+    snapshot=>{
+
+      items = items.filter(i=>i.type!==type);
+
+      snapshot.forEach(doc=>{
+
+        items.push({
+
+          ...doc.data(),
+
+          type:type
+
+        });
+
+      });
+
+      render();
+
+    }
+
+  );
+
+}
+
+function render(){
+
+  const list=document.getElementById("list");
+
+  list.innerHTML="";
+
+  let pendingDeposit=0;
+  let pendingWithdraw=0;
+
+  const showItems = items
+
+  .filter(i=>filter==="all" || i.type===filter)
+
+  .sort((a,b)=>
+
+      (b.createdAt?.seconds||0)
+
+      -
+
+      (a.createdAt?.seconds||0)
+
+  );
+
+  showItems.forEach(item=>{
+
+      if(item.status==="pending"){
+
+          if(item.type==="deposit"){
+
+              pendingDeposit+=Number(item.amount||0);
+
+          }else{
+
+              pendingWithdraw+=Number(item.amount||0);
+
+          }
+
+      }
+
+      list.innerHTML += `
+      <div class="card ${item.type}">
+
+        <div class="amount">
+          ৳ ${item.amount}
+        </div>
+
+        <div class="small">
+          ${item.method || ""}
+        </div>
+
+        <div class="small">
+          ${item.createdAt?.toDate().toLocaleString("en-GB") || ""}
+        </div>
+
+        <div class="${
+          item.status==="approved"
+          ? "approved"
+          : item.status==="rejected"
+          ? "rejected"
+          : "pendingTxt"
+        }">
+
+          ${item.status}
+
+        </div>
+
+      </div>
+      `;
+
+  });
+
+  document.getElementById("pendingDeposit").innerText = pendingDeposit;
+
+  document.getElementById("pendingWithdraw").innerText = pendingWithdraw;
+
+}
+  window.setFilter = (type, btn)=>{
+
+    filter = type;
+
+    document
+        .querySelectorAll(".filters button")
+        .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    render();
+
+};
+
+</script>
+
+</div>
+
+</body>
+</html>
