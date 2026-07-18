@@ -201,17 +201,6 @@ window.setFilter=(f,b)=>{
   b.classList.add("active");
   render();
 };
-
-window.exportCSV=()=>{
-  let csv="Type,Amount,Status,Method,Date\n";
-  items.forEach(t=>{
-    csv+=`${t.type},${t.amount},${t.status},${t.method||""},"${t.createdAt?.toDate().toLocaleString("en-GB")}"\n`;
-  });
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download="transactions.csv";
-  a.click();
-};
 </script>
 
 </body>
