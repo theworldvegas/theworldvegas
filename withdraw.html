@@ -133,27 +133,35 @@ placeholder="Phone Number">
 <label>Payment Method</label>
 
 <select id="method">
-<option value="">Payment Method</option>
-<option value="Bkash">Bkash</option>
-<option value="Nagad">Nagad</option>
-<option value="Rocket">Rocket</option>
+<option valueCi="AB">AB BANK PLC.</option>
+<option valueCi="ASIA">BANK ASIA PLC.</option>
+<option valueCi="BKASH">BKASH M.F.S</option>
+<option valueCi="BASIC">BASIC BANK PLC.</option>
+<option valueCi="BRAC">BRAC BANK PLC.</option>
+<option valueCi="DBBL">DBBL BANK PLC.</option>
+<option valueCi="EXIM">EXIM BANK PLC.</option>
+<option valueCi="NAGAD">NAGAD M.F.S</option>
+<option valueCi="ONE">ONE BANK PLC.</option>
+<option valueCi="ROCKET">ROCKET M.F.S</option>
+<option valueCi="OK">OK M.F.S</option>
+<option valueCi="WOORI">WOORI BANK.</option>
 </select>
 
 <label>Debit Amount</label>
 
 <input
-type="number"
+type="account number"
 id="amount"
 placeholder="Debit Dolar">
 
 <button
 id="submitBtn"
 class="submit-btn">
-Withdraw Submit
+Debit Submit
 </button>
 
 <div class="note">
-Withdraw সফল করতে সঠিক ফোন নাম্বার ব্যবহার করুন।
+please Insure Your Information
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
@@ -211,12 +219,12 @@ submitBtn.onclick = async ()=>{
     Number(document.getElementById("amount").value);
 
   if(!mobile || !method || amount <= 0){
-    alert("সব তথ্য পূরণ করুন");
+    alert("Fill Up All Field");
     return;
   }
 
   if(amount > currentBalance){
-    alert("পর্যাপ্ত ব্যালেন্স নেই");
+    alert("Check Audit");
     return;
   }
 
@@ -247,7 +255,7 @@ submitBtn.onclick = async ()=>{
   }catch(err){
     console.error(err);
   }finally{
-    location.href = "transaction.html";
+    location.href = "dashboard.html";
   };
 
 };
