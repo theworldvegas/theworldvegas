@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The World Vegas | Contact</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+    url("https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/background.jpg");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
+
+.container{
+    width:100%;
+    max-width:450px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.contact-box{
+    width:100%;
+    min-height:220px;
+
+    background:rgba(15,20,35,.35);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:24px;
+
+    box-shadow:
+        0 0 25px rgba(0,255,255,.15),
+        0 15px 35px rgba(0,0,0,.45);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    padding:25px;
+}
+
+.contact-box h2{
+    color:#18f2c2;
+    font-size:30px;
+    margin-bottom:30px;
+    text-shadow:0 0 12px rgba(24,242,194,.8);
+}
+
+.email-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.email{
+    color:#FFD56A;
+    font-size:22px;
+    font-weight:bold;
+    word-break:break-all;
+    text-shadow:0 0 10px rgba(255,213,106,.7);
+}
+
+.copy-btn{
+    border:none;
+    cursor:pointer;
+
+    padding:10px 20px;
+
+    border-radius:12px;
+
+    background:#18f2c2;
+    color:#000;
+    font-weight:bold;
+    font-size:15px;
+
+    transition:.25s;
+}
+
+.copy-btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #18f2c2;
+}
+
+#copyMsg{
+    margin-top:18px;
+    color:#18f2c2;
+    font-size:15px;
+    font-weight:bold;
+    min-height:20px;
+}
+
+.gif-box img{
+    width:100%;
+    border-radius:24px;
+
+    box-shadow:
+        0 0 20px rgba(255,255,255,.15),
+        0 15px 30px rgba(0,0,0,.45);
+}
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="contact-box">
+
+        <h2>Ask Your Question</h2>
+
+        <div class="email-row">
+
+            <div class="email" id="email">
+                the.world.vegas@gmail.com
+            </div>
+
+            <button class="copy-btn" id="copyBtn">
+                📋 Copy
+            </button>
+
+        </div>
+
+        <div id="copyMsg"></div>
+
+    </div>
+
+    <div class="gif-box">
+        <img src="https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/pic1.gif" alt="Vegas GIF">
+    </div>
+
+</div>
+
+<script>
+  const email = "the.world.vegas@gmail.com";
+
+document.getElementById("copyBtn").addEventListener("click", async () => {
+
+    try{
+
+        await navigator.clipboard.writeText(email);
+
+        const msg = document.getElementById("copyMsg");
+        msg.innerHTML = "✅ Gmail Copied Successfully";
+
+        setTimeout(()=>{
+            msg.innerHTML = "";
+        },2000);
+
+    }catch(err){
+
+        const input = document.createElement("input");
+        input.value = email;
+
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        document.body.removeChild(input);
+
+        const msg = document.getElementById("copyMsg");
+        msg.innerHTML = "✅ Gmail Copied Successfully";
+
+        setTimeout(()=>{
+            msg.innerHTML = "";
+        },2000);
+
+    }
+
+});
+</script>
+
+</body>
+</html>
