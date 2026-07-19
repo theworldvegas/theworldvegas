@@ -118,31 +118,19 @@ select option{
 
 <label>Payment Method</label>
 
-<select id="method" required>
-<option value="">Select</option>
-<option value="AbBank">Ab Bank</option>
-<option value="BracBank">Brac Bank</option>
-<option value="Dbbl">Dutch Bangla Bank</option>
-<option value="Ific">Ific Bank</option>
-<option value="Mtb">Mutual Trast Bank</option>
-<option value="City">City Bank</option>
-<option value="Ok">Ok Bank</option>
 <option valueCi="Bkash">Bkash Bank</option>
-<option value="Standard">Standard Bank</option>
 <option value="Nagad">Nagad Bank</option>
 <option value="Rocket">Rocket Bank</option>
-<option value="Dhaka">Dhaka Bank</option>
-<option value="One">One Bank</option>
-<option value="Trust">Trust Bank</option>  
+<option value="Ok">Ok Bank</option>  
 </select>
 
-<label>Amount (৳)</label>
+<label>Dollars (💴)</label>
 
 <input
 type="number"
 id="amount"
-min="0"
-placeholder="0৳"
+min="10"
+placeholder="10"
 required>
 <label>Transaction ID</label>
 
@@ -220,8 +208,8 @@ const submitBtn = document.querySelector(".submit-btn");
         return;
     }
 
-    if(amount < 50){
-        alert("Minimum Deposit 0৳");
+    if(amount < 10){
+        alert("Minimum Credit 10 Dollars");
         return;
     }
 
