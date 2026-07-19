@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Biniyog | Admin User View</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f6fa;
+    font-size:11px;
+}
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 12px;
+    background:#0b1a33;
+    box-shadow:0 2px 10px rgba(0,0,0,.5);
+}
+.user-icon{
+    width:35px;
+    height:35px;
+    background:#18f2c2;
+    color:#000;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+#searchBox{
+    width:180px;
+    padding:4px 8px;
+    border:none;
+    border-radius:4px;
+    font-size:12px;
+}
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:8px;
+}
+.dashboard{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+.card{
+    background:#1a2a4d;
+    color:#fff;
+    border-radius:6px;
+    padding:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,.6);
+    overflow-x:auto;
+}
+.card h2{
+    margin-top:0;
+    color:#ffc107;
+}
+.table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:5px;
+}
+.table th,
+.table td{
+    border:1px solid #3a4a6f;
+    padding:3px 5px;
+}
+.table th{
+    background:#3a4a6f;
+    color:#ffc107;
+}
+.button{
+    border:none;
+    border-radius:3px;
+    cursor:pointer;
+    color:#fff;
+    font-size:10px;
+    padding:3px 6px;
+}
+.add-balance{
+    background:#198754;
+}
+.subtract-balance{
+    background:#dc3545;
+}
+.expand-btn{
+    background:#ffc107;
+    color:#000;
+}
+.footer{
+    text-align:center;
+    padding:8px;
+}
+.logout{
+    background:#18f2c2;
+    color:#000;
+    border:none;
+    padding:5px 12px;
+    border-radius:4px;
+    font-weight:bold;
+    cursor:pointer;
+}
+.user-section{
+    border-bottom:1px solid #3a4a6f;
+    padding-bottom:6px;
+    margin-bottom:6px;
+}
+input[type=number]{
+    width:70px;
+}
+.flex-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-top:4px;
+}
+.deposit{
+    color:#00ff00;
+    font-weight:bold;
+}
+.withdraw{
+    color:#ffd54f;
+    font-weight:bold;
+}
+.debit{
+    color:#ff4444;
+    font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    <div class="user-icon" onclick="goBack()">⬅</div>
+
+    <input
+        type="text"
+        id="searchBox"
+        placeholder="Search Name / Phone"
+        oninput="filterUsers()">
+</div>
+
+<div class="container">
+
+    <div class="dashboard">
+
+        <div class="card" id="usersList">
+
+            Loading users...
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+
+    <button class="logout" onclick="logout()">
+
+        Logout
+
+    </button>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+import {
+
+getFirestore,
+collection,
+getDocs,
+getDoc,
+doc,
+updateDoc,
+runTransaction,
+serverTimestamp
+
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey:"AIzaSyDzC0YtyxLS0y2gqCHMElbXQgYQBkB_2WQ",
+authDomain:"theworldvegas-53640.firebaseapp.com",
+projectId:"theworldvegas-53640",
+storageBucket:"theworldvegas-53640.firebasestorage.app",
+messagingSenderId:"566548687571",
+appId:"1:566548687571:web:bbee50b1d7246b4959c226"
+
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let allUsers=[];
+let allTransactions=[];
+let allPlans=[];
+
+onAuthStateChanged(auth,async(user)=>{
+
+    if(!user){
+
+        location.href="admin-login.html";
+
+        return;
+
+    }
+
+    try{
+
+        const adminSnap=await getDoc(doc(db,"users",user.uid));
+
+        if(!adminSnap.exists()){
+
+            await signOut(auth);
+
+            location.href="admin-login.html";
+
+            return;
+
+        }
+
+        if(adminSnap.data().role!=="admin"){
+
+            await signOut(auth);
+
+            alert("Access Denied");
+
+            location.href="admin-login.html";
+
+            return;
+
+        }
+
+        loadUsers();
+
+    }catch(err){
+
+        console.error(err);
+
+        await signOut(auth);
+
+        location.href="admin-login.html";
+
+    }
+
+});
+
+window.goBack=()=>{
+
+location.href="admin-dashboard.html";
+
+};
+  async function loadUsers(){
+
+    const usersList=document.getElementById("usersList");
+
+    usersList.innerHTML="Loading users...";
+
+    const [usersSnap,transactionsSnap,plansSnap]=await Promise.all([
+
+        getDocs(collection(db,"users")),
+
+        getDocs(collection(db,"transactions")),
+
+        getDocs(collection(db,"user_plans"))
+
+    ]);
+
+    allUsers=usersSnap.docs.map(doc=>({
+
+        id:doc.id,
+
+        ...doc.data()
+
+    }));
+
+    allTransactions=transactionsSnap.docs.map(doc=>({
+
+        id:doc.id,
+
+        ...doc.data()
+
+    }));
+
+    allPlans=plansSnap.docs.map(doc=>({
+
+        id:doc.id,
+
+        ...doc.data()
+
+    }));
+
+    renderUsers(allUsers);
+
+}
+
+function renderUsers(users){
+
+    const usersList=document.getElementById("usersList");
+
+    usersList.innerHTML="";
+
+    let counter=1;
+
+    users.forEach(u=>{
+
+        const userTxns=allTransactions.filter(t=>t.uid===u.id);
+
+        const userPlans=allPlans.filter(p=>p.uid===u.id);
+
+        let totalDeposit=0;
+
+        let totalWithdraw=0;
+
+        userTxns.forEach(t=>{
+
+            if(t.type==="deposit"||t.type==="credit"){
+
+                totalDeposit+=Number(t.amount||0);
+
+            }
+
+            if(t.type==="withdraw"||t.type==="debit"){
+
+                totalWithdraw+=Number(t.amount||0);
+
+            }
+
+        });
+
+        const section=document.createElement("div");
+
+        section.className="user-section";
+
+        section.transactions=userTxns;
+
+        section.plans=userPlans;
+
+        section.innerHTML=`
+
+<div class="flex-row">
+
+<h2>${counter}. ${u.name||"N/A"}</h2>
+
+<span><b>Phone:</b> ${u.phone||"N/A"}</span>
+
+<span><b>Balance:</b> ৳<span id="balance-${u.id}">${u.balance||0}</span></span>
+
+</div>
+
+<div class="flex-row">
+
+<span class="deposit">Deposit : ৳${totalDeposit}</span>
+
+<span class="withdraw">Withdraw : ৳${totalWithdraw}</span>
+
+</div>
+
+<div class="flex-row">
+
+<input
+type="number"
+id="changeBalance-${u.id}"
+placeholder="Amount">
+
+<button
+class="button add-balance"
+onclick="changeBalance('${u.id}','add')">
+
+Add
+
+</button>
+
+<button
+class="button subtract-balance"
+onclick="changeBalance('${u.id}','subtract')">
+
+Subtract
+
+</button>
+
+<button
+class="button expand-btn"
+onclick="toggleHistory('${u.id}')">
+
+Show ▼
+
+</button>
+
+</div>
+
+<div
+id="history-${u.id}"
+style="display:none;margin-top:6px;">
+
+</div>
+
+`;
+
+        usersList.appendChild(section);
+
+        counter++;
+
+    });
+
+}
+
+window.filterUsers=()=>{
+
+    const keyword=document
+    .getElementById("searchBox")
+    .value
+    .toLowerCase();
+
+    const filtered=allUsers.filter(u=>{
+
+        return(
+
+            (u.name||"")
+
+            .toLowerCase()
+
+            .includes(keyword)
+
+            ||
+
+            (u.phone||"")
+
+            .includes(keyword)
+
+        );
+
+    });
+
+    renderUsers(filtered);
+
+};
+  window.changeBalance = async(userId, action)=>{
+
+    const amount = Number(document.getElementById(`changeBalance-${userId}`).value);
+
+    if(!amount || amount<=0){
+        alert("Enter valid amount");
+        return;
+    }
+
+    const delta = action==="add" ? amount : -amount;
+
+    try{
+
+        await runTransaction(db, async(transaction)=>{
+
+            const userRef = doc(db,"users",userId);
+
+            const userSnap = await transaction.get(userRef);
+
+            if(!userSnap.exists()) throw new Error("User not found");
+
+            const balance = Number(userSnap.data().balance || 0);
+
+            if(balance + delta < 0){
+
+                throw new Error("Insufficient Balance");
+
+            }
+
+            transaction.update(userRef,{
+                balance:balance + delta
+            });
+
+        });
+
+        loadUsers();
+
+    }catch(err){
+
+        alert(err.message);
+
+    }
+
+};
+
+window.toggleHistory = async(userId)=>{
+
+    const box = document.getElementById(`history-${userId}`);
+
+    if(box.style.display==="none"){
+
+        box.style.display="block";
+
+        loadUserHistory(userId);
+
+    }else{
+
+        box.style.display="none";
+
+        box.innerHTML="";
+
+    }
+
+};
+
+function getPlanRemaining(endDate){
+
+    if(!endDate) return "-";
+
+    const now = new Date();
+
+    const end = endDate.toDate();
+
+    const diff = end-now;
+
+    if(diff<=0) return "Expired";
+
+    const d = Math.floor(diff/(1000*60*60*24));
+
+    const h = Math.floor(diff/(1000*60*60)%24);
+
+    const m = Math.floor(diff/(1000*60)%60);
+
+    return `${d}d ${h}h ${m}m`;
+
+}
+
+async function loadUserHistory(userId){
+
+    const history = document.getElementById(`history-${userId}`);
+
+    const section = [...document.querySelectorAll(".user-section")]
+
+    .find(el=>el.querySelector(`#balance-${userId}`));
+
+    const transactions = section.transactions || [];
+
+    const plans = section.plans || [];
+
+    let html = "<h3>Transactions</h3>";
+
+    if(transactions.length===0){
+
+        html += "<p>No Transactions</p>";
+
+    }else{
+
+        html += `
+<table class="table">
+<tr>
+<th>Type</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Date</th>
+</tr>`;
+
+        transactions.forEach(t=>{
+
+            const date = t.createdAt?.toDate ?
+
+            t.createdAt.toDate().toLocaleString()
+
+            : "-";
+
+            html += `
+<tr>
+<td>${t.type||"-"}</td>
+<td>৳${t.amount||0}</td>
+<td>${t.status||"-"}</td>
+<td>${date}</td>
+</tr>`;
+
+        });
+
+        html += "</table>";
+
+    }
+
+    html += "<h3>Plan History</h3>";
+
+    if(plans.length===0){
+
+        html += "<p>No Plans</p>";
+
+    }else{
+
+        html += `
+<table class="table">
+<tr>
+<th>Type</th>
+<th>Status</th>
+<th>Price</th>
+<th>Earned</th>
+<th>Days</th>
+<th>Remaining</th>
+</tr>`;
+
+        plans.forEach(p=>{
+
+            html += `
+<tr>
+<td>${p.type||"-"}</td>
+<td>${p.status||"-"}</td>
+<td>৳${p.price||0}</td>
+<td>৳${p.earned||0}</td>
+<td>${p.days||"-"}</td>
+<td>${getPlanRemaining(p.endDate)}</td>
+</tr>`;
+
+        });
+
+        html += "</table>";
+
+    }
+
+    history.innerHTML = html;
+
+}
+
+window.logout = async()=>{
+
+    await signOut(auth);
+
+    location.href="admin-login.html";
+
+};
+
+</script>
+
+</body>
+</html>
