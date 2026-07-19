@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The World Vegas | Refer & Earn</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:'Hind Siliguri',sans-serif;
+
+min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+padding:20px;
+
+background:
+linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+url("https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/background.jpg")
+center center/cover no-repeat fixed;
+
+}
+
+.container{
+
+width:100%;
+max-width:420px;
+
+background:rgba(255,255,255,.10);
+
+backdrop-filter:blur(18px);
+-webkit-backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.18);
+
+border-radius:26px;
+
+padding:24px;
+
+box-shadow:
+0 0 30px rgba(0,255,255,.12),
+0 15px 40px rgba(0,0,0,.45);
+
+}
+
+h2{
+
+text-align:center;
+
+color:#34ffe1;
+
+font-size:34px;
+
+margin-bottom:25px;
+
+text-shadow:0 0 10px rgba(52,255,225,.5);
+
+}
+
+/* Hidden */
+
+.sub,
+.ref-box,
+.refer-stats,
+.back,
+#msg{
+
+display:none;
+
+}
+
+/* Input */
+
+.input-box{
+
+display:flex;
+align-items:center;
+gap:10px;
+width:100%;
+margin-bottom:24px;
+
+}
+
+.input-box input{
+
+flex:1;
+min-width:0;
+
+height:56px;
+
+border:none;
+outline:none;
+
+border-radius:18px;
+
+padding:0 16px;
+
+font-size:16px;
+
+background:rgba(255,255,255,.92);
+
+}
+  .input-box button{
+
+flex:0 0 95px;
+
+height:56px;
+
+border:none;
+
+border-radius:18px;
+
+cursor:pointer;
+
+font-size:16px;
+
+font-weight:bold;
+
+color:#000;
+
+background:linear-gradient(135deg,#1df2c8,#29ffd8);
+
+box-shadow:0 0 15px rgba(41,255,216,.45);
+
+transition:.25s;
+
+}
+
+.input-box button:active{
+
+transform:scale(.96);
+
+}
+
+.rules{
+
+margin-top:15px;
+
+background:rgba(0,0,0,.28);
+
+border-radius:20px;
+
+padding:18px;
+
+border:1px solid rgba(255,255,255,.10);
+
+}
+
+.rules p{
+
+color:#39e6d7;
+
+font-size:18px;
+
+margin:14px 0;
+
+line-height:1.5;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Refer & Earn</h2>
+
+<div class="input-box">
+
+<input
+type="tel"
+id="newUserPhone"
+placeholder="New Number"
+maxlength="11"
+pattern="[0-9]{11}"
+required>
+
+<button id="submitReferral">
+Submit
+</button>
+
+</div>
+
+<div class="rules">
+
+<p>Audit Up To 50 Dollars → Profit 0.08%</p>
+
+<p>Audit Up To 1,000 Dollars → Profit 0.013%</p>
+
+<p>Audit Up To 5,000 Dollars → Extra 0.027%</p>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+getFirestore,
+doc,
+getDoc,
+collection,
+addDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+  const firebaseConfig = {
+  apiKey: "AIzaSyDzC0YtyxLS0y2gqCHMElbXQgYQBkB_2WQ",
+  authDomain: "theworldvegas-53640.firebaseapp.com",
+  projectId: "theworldvegas-53640",
+  storageBucket: "theworldvegas-53640.firebasestorage.app",
+  messagingSenderId: "566548687571",
+  appId: "1:566548687571:web:bbee50b1d7246b4959c226",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let uData = null;
+
+onAuthStateChanged(auth, async(user)=>{
+
+    if(!user){
+        location.href = "login.html";
+        return;
+    }
+
+    currentUser = user;
+
+    const snap = await getDoc(doc(db,"users",user.uid));
+
+    if(snap.exists()){
+        uData = snap.data();
+    }
+
+});
+
+document.getElementById("submitReferral").addEventListener("click", async()=>{
+
+    const phone = document.getElementById("newUserPhone").value.trim();
+
+    if(!/^\d{11}$/.test(phone)){
+        alert("Enter New Number");
+        return;
+    }
+
+    try{
+
+        await addDoc(collection(db,"referrals"),{
+
+            uid: currentUser.uid,
+
+            referrerPhone: uData?.phone || "N/A",
+
+            newUserPhone: phone,
+
+            timestamp: serverTimestamp(),
+
+            bonusGiven: false,
+
+            status: "pending"
+
+        });
+
+        alert("Referral Submitted Successfully.");
+
+        document.getElementById("newUserPhone").value = "";
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Submit Failed.");
+
+    }
+
+});
+</script>
+
+</body>
+</html>
