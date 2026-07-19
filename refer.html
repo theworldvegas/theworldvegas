@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Refer & Earn</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Hind Siliguri',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+
+    background:
+    linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+    url("https://raw.githubusercontent.com/theworldvegas/theworldvegas/main/assets/background.jpg")
+    center center/cover no-repeat fixed;
+}
+
+.container{
+
+    width:100%;
+    max-width:430px;
+
+    padding:25px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.18);
+
+    backdrop-filter:blur(20px);
+
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.45),
+    inset 0 1px rgba(255,255,255,.25);
+
+}
+
+h2{
+
+    color:#22ffe2;
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+    font-size:38px;
+
+    font-weight:700;
+
+    text-shadow:0 0 20px rgba(34,255,226,.5);
+
+}
+
+.input-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px;
+
+    border-radius:22px;
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+    inset 0 1px rgba(255,255,255,.15),
+    0 0 20px rgba(34,255,226,.08);
+
+}
+
+.input-card input{
+
+    flex:1;
+
+    height:58px;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:18px;
+
+    padding:0 16px;
+
+    font-size:16px;
+
+}
+
+.submit-btn{
+
+    width:110px;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    color:#000;
+
+    background:#20f0cf;
+
+    box-shadow:0 0 20px rgba(32,240,207,.45);
+
+}
+  .rules{
+
+    margin-top:25px;
+
+    padding:20px;
+
+    border-radius:24px;
+
+    background:rgba(0,0,0,.18);
+
+    border:1px solid rgba(255,255,255,.12);
+
+    box-shadow:
+    inset 0 1px rgba(255,255,255,.10),
+    0 0 25px rgba(34,255,226,.08);
+
+}
+
+.rules p{
+
+    color:#31e6d3;
+
+    font-size:18px;
+
+    margin:18px 0;
+
+    line-height:1.5;
+
+}
+
+.rules span{
+
+    color:#ffffff;
+
+    font-weight:bold;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Refer & Earn</h2>
+
+<div class="input-card">
+
+<input
+type="tel"
+id="newUserPhone"
+placeholder="নতুন ইউজারের ফোন নাম্বার"
+maxlength="11"
+required>
+
+<button
+class="submit-btn"
+id="submitReferral">
+Submit
+</button>
+
+</div>
+
+<div class="rules">
+
+<p>🏷️ <span>1-5 BRONZE</span> Level → extra 10%</p>
+
+<p>⭐ <span>6-9 PLATINUM</span> Level → extra 25%</p>
+
+<p>💎 <span>9+ TITANIUM</span> Level → extra 35%</p>
+
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFsTzlRPoWHVXEHbKrPdwxslxZGa7Kqfw",
+  authDomain: "biniyog-95d00.firebaseapp.com",
+  projectId: "biniyog-95d00",
+  storageBucket: "biniyog-95d00.firebasestorage.app",
+  messagingSenderId: "523238228802",
+  appId: "1:523238228802:web:a65183bdc4c268f94efedb"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let userData = null;
+
+onAuthStateChanged(auth, async(user)=>{
+
+    if(!user){
+        location.href="login.html";
+        return;
+    }
+
+    currentUser = user;
+
+    const snap = await getDoc(doc(db,"users",user.uid));
+
+    if(snap.exists()){
+        userData = snap.data();
+    }
+
+});
+
+document.getElementById("submitReferral").addEventListener("click",async()=>{
+
+    const phone=document.getElementById("newUserPhone").value.trim();
+
+    if(!/^[0-9]{11}$/.test(phone)){
+        alert("Virgin Number");
+        return;
+    }
+
+    try{
+
+        await addDoc(collection(db,"referrals"),{
+
+            uid:currentUser.uid,
+
+            referrerPhone:userData.phone || "",
+
+            newUserPhone:phone,
+
+            timestamp:serverTimestamp(),
+
+            bonusGiven:false,
+
+            status:"pending"
+
+        });
+
+        alert("Referral Submitted Successfully");
+
+        document.getElementById("newUserPhone").value="";
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Submit Failed");
+
+    }
+
+});
+</script>
+
+</body>
+</html>
