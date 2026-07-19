@@ -166,7 +166,7 @@ let allTransactions = [];
 let allPlans = [];
 
 onAuthStateChanged(auth, async(user)=>{
-  if(!user){ location.href="admin-login.html"; return; }
+  if(!user){ location.href="admin-user-view.html"; return; }
 
   // check role
   const uSnap = await getDocs(collection(db,"users"));
