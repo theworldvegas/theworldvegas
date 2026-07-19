@@ -117,19 +117,20 @@ select option{
 <form id="depositForm">
   <label>Payment Method</label>
   <select id="method" required>
+   <option value="">Select</option>
    <option value="Bkash">Bkash Bank</option>
    <option value="Nagad">Nagad Bank</option>
    <option value="Rocket">Rocket Bank</option>
    <option value="Ok">Ok Bank</option>  
  </select>
 
-<label>Dollars (💴)</label>
+<label>Enter Dollars </label>
 
 <input
 type="number"
 id="amount"
 min="10"
-placeholder="10"
+placeholder="Minimum 10 Dollars"
 required>
 <label>Transaction ID</label>
 
