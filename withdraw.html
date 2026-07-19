@@ -128,11 +128,12 @@ Audit: ৳ <span id="balance">0</span>
 <input
 type="text"
 id="mobile"
-placeholder="Phone Number">
+placeholder="Account Number">
 
 <label>Payment Method</label>
 
 <select id="method">
+<option value="">Select</option>
 <option valueCi="AB">AB BANK PLC.</option>
 <option valueCi="ASIA">BANK ASIA PLC.</option>
 <option valueCi="BKASH">BKASH M.F.S</option>
@@ -147,21 +148,21 @@ placeholder="Phone Number">
 <option valueCi="WOORI">WOORI BANK.</option>
 </select>
 
-<label>Debit Amount</label>
+<label>Debit Dollars</label>
 
 <input
 type="account number"
 id="amount"
-placeholder="Debit Dolar">
+placeholder="Enter Dollars">
 
 <button
 id="submitBtn"
 class="submit-btn">
-Debit Submit
+Debit
 </button>
 
 <div class="note">
-please Insure Your Information
+please Insure Information
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
