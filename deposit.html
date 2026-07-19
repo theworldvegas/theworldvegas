@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The world vegas | Deposit</title>
+<title>The world vegas | Credit</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -216,22 +216,22 @@ const submitBtn = document.querySelector(".submit-btn");
     const userPhone = userPhoneEl.value.trim();
 
     if(!method){
-        alert("Payment Method নির্বাচন করুন");
+        alert("Payment Method");
         return;
     }
 
-    if(amount < 5000){
-        alert("Minimum Deposit 5000৳");
+    if(amount < 50){
+        alert("Minimum Deposit 0৳");
         return;
     }
 
     if(!trxId){
-        alert("Transaction ID লিখুন");
+        alert("Transaction ID");
         return;
     }
 
     if(userPhone.length < 11){
-        alert("সঠিক মোবাইল নাম্বার লিখুন");
+        alert("Phone Number");
         return;
     }
 
@@ -262,9 +262,9 @@ const submitBtn = document.querySelector(".submit-btn");
 
         });
 
-        alert("Deposit Request Submitted Successfully");
+        alert("Credit Request Submitted");
 
-        location.href="transaction.html";
+        location.href="dashboard.html";
 
     }catch(error){
 
@@ -274,7 +274,7 @@ const submitBtn = document.querySelector(".submit-btn");
 
         submitBtn.disabled=false;
 
-        submitBtn.innerText="Submit Deposit";
+        submitBtn.innerText="Submit Credit";
     }
 
 });
